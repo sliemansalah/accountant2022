@@ -12,11 +12,7 @@ class DivisionController extends Controller
     public function index()
     {
         $division= Division::all();
-        return response()->json([
-            "success" => true,
-            "message" => "Division List",
-            "data" => $division
-        ]);
+        return $division;
     }
 
     public function store(Request $request)
@@ -46,24 +42,24 @@ class DivisionController extends Controller
         if (is_null($division)) {
         return $this->sendError('Division not found.');
         }
-        return response()->json([
-            "success" => true,
-            "message" => "Division retrieved successfully.",
-            "data" => $division
-        ]);
+        return $division;
     }
 
     public function update(Request $request, division $division)
     {
         $input = $request->all();
+
         $validator = Validator::make($input, [
         'name' => 'required'
         ]);
+
         if($validator->fails()){
         return $this->sendError('Validation Error.', $validator->errors());       
         }
+
         $division->name = $input['name'];
         $division->save();
+        
         return response()->json([
             "success" => true,
             "message" => "Division updated successfully.",
