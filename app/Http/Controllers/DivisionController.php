@@ -4,82 +4,79 @@ namespace App\Http\Controllers;
 
 use App\Models\division;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class DivisionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $division= Division::all();
+        return response()->json([
+            "success" => true,
+            "message" => "Division List",
+            "data" => $division
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'name' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());   
+        }
+
+        $division = Division::create($input);
+        return response()->json([
+            "success" => true,
+            "message" => "division created successfully.",
+            "data" => $division
+        ]);
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\division  $division
-     * @return \Illuminate\Http\Response
-     */
-    public function show(division $division)
+    public function show($id)
     {
-        //
+        $division = Division::find($id);
+        if (is_null($division)) {
+        return $this->sendError('Division not found.');
+        }
+        return response()->json([
+            "success" => true,
+            "message" => "Division retrieved successfully.",
+            "data" => $division
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\division  $division
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(division $division)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\division  $division
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, division $division)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+        'name' => 'required'
+        ]);
+        if($validator->fails()){
+        return $this->sendError('Validation Error.', $validator->errors());       
+        }
+        $division->name = $input['name'];
+        $division->save();
+        return response()->json([
+            "success" => true,
+            "message" => "Division updated successfully.",
+            "data" => $division
+        ]);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\division  $division
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(division $division)
     {
-        //
+        $division->delete();
+            return response()->json([
+            "success" => true,
+            "message" => "Division deleted successfully.",
+            "data" => $division
+        ]);
     }
 }
